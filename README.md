@@ -7,7 +7,7 @@
 
 ## Recuperacion de datos de medicion
 
-Chrony guarda los datos que va obteniendo de cada paquete recibido en el directorio `/var/logs/chrony` y el archivo es `measurements.log` que tiene el siguiente formato:
+Chrony guarda los datos que va obteniendo de cada paquete recibido en el directorio `/var/logs/chrony` y el archivo es `measurements.log` que guarda los datos en el formato CSV equivalente a la siguiente tabla:
 
 
 
