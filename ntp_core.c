@@ -389,7 +389,7 @@ NCR_Initialise(void)
   do_time_checks();
 
   logfileid = CNF_GetLogMeasurements(&log_raw_measurements) ? LOG_FileOpen("measurements",
-      "   Date (UTC) Time     IP Address   L St 123 567 ABCD  LP RP Score    Offset  Peer del. Peer disp.  Root del. Root disp. Refid     MTxRx")
+      "   Date (UTC) Time     t1[s] 	t2[s] 	t3[s] 	t4[s]")
     : -1;
 
   access_auth_table = ADF_CreateTable();
@@ -1443,6 +1443,8 @@ receive_packet(NCR_Instance inst, NTP_Local_Address *local_addr,
 {
   SST_Stats stats;
 
+	 char *t1 = "\0", *t2 = "\0", *t3 = "\0", *t4 = "\0";
+
   int pkt_leap, pkt_version;
   uint32_t pkt_refid, pkt_key_id;
   double pkt_root_delay;
@@ -1606,6 +1608,14 @@ receive_packet(NCR_Instance inst, NTP_Local_Address *local_addr,
                                                    &remote_request_receive));
 
     precision = LCL_GetSysPrecisionAsQuantum() + UTI_Log2ToDouble(message->precision);
+
+
+	/*Calcula los parametros T sumando la cantidad de segundos y nanosegundos del paquete.*/
+	t1 = UTI_TimespecToString(&local_transmit.ts);
+	t2 = UTI_TimespecToString(&remote_receive);
+	t3 = UTI_TimespecToString(&remote_transmit);
+	t4 = UTI_TimespecToString(&local_receive.ts);
+
 
     /* Calculate delay */
     delay = fabs(local_interval - remote_interval);
@@ -1882,21 +1892,13 @@ receive_packet(NCR_Instance inst, NTP_Local_Address *local_addr,
 
   /* Do measurement logging */
   if (logfileid != -1 && (log_raw_measurements || synced_packet)) {
-    LOG_FileWrite(logfileid, "%s %-15s %1c %2d %1d%1d%1d %1d%1d%1d %1d%1d%1d%d  %2d %2d %4.2f %10.3e %10.3e %10.3e %10.3e %10.3e %08"PRIX32" %1d%1c %1c %1c",
-            UTI_TimeToLogForm(sample_time.tv_sec),
-            UTI_IPToString(&inst->remote_addr.ip_addr),
-            leap_chars[pkt_leap],
-            message->stratum,
-            test1, test2, test3, test5, test6, test7, testA, testB, testC, testD,
-            inst->local_poll, message->poll,
-            inst->poll_score,
-            offset, delay, dispersion,
-            pkt_root_delay, pkt_root_dispersion, pkt_refid,
-            NTP_LVM_TO_MODE(message->lvm), interleaved_packet ? 'I' : 'B',
-            tss_chars[local_transmit.source],
-            tss_chars[local_receive.source]);
+    LOG_FileWrite(logfileid, "%s,%s,%s,%s,%s",
+		UTI_TimeToLogForm(sample_time.tv_sec),
+		t1,
+		t2,
+		t3,
+		t4);
   }            
-
   return good_packet;
 }
 

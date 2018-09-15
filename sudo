@@ -1,0 +1,1 @@
+pool time1.google.com iburst /etc/chrony.conf
