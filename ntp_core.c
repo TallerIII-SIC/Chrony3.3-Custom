@@ -389,7 +389,7 @@ NCR_Initialise(void)
   do_time_checks();
 
   logfileid = CNF_GetLogMeasurements(&log_raw_measurements) ? LOG_FileOpen("measurements",
-      "   Date (UTC) Time     t1[s] 	t2[s] 	t3[s] 	t4[s]")
+      "   Date (UTC) Time     t1[s] 	t2[s] 	t3[s] 	t4[s]	offset")
     : -1;
 
   access_auth_table = ADF_CreateTable();
@@ -1610,7 +1610,7 @@ receive_packet(NCR_Instance inst, NTP_Local_Address *local_addr,
     precision = LCL_GetSysPrecisionAsQuantum() + UTI_Log2ToDouble(message->precision);
 
 
-	/*Calcula los parametros T sumando la cantidad de segundos y nanosegundos del paquete.*/
+	/*Obtiene los T del paquete.*/
 	t1 = UTI_TimespecToString(&local_transmit.ts);
 	t2 = UTI_TimespecToString(&remote_receive);
 	t3 = UTI_TimespecToString(&remote_transmit);
@@ -1892,12 +1892,13 @@ receive_packet(NCR_Instance inst, NTP_Local_Address *local_addr,
 
   /* Do measurement logging */
   if (logfileid != -1 && (log_raw_measurements || synced_packet)) {
-    LOG_FileWrite(logfileid, "%s,%s,%s,%s,%s",
+    LOG_FileWrite(logfileid, "%s,%s,%s,%s,%s,%10.3e",
 		UTI_TimeToLogForm(sample_time.tv_sec),
 		t1,
 		t2,
 		t3,
-		t4);
+		t4,
+		offset);
   }            
   return good_packet;
 }
