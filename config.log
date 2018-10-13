@@ -40,7 +40,7 @@ int main(int argc, char **argv) {
 return (int) pow(2.0, log(sqrt((double)argc)));
 return 0; }
 gcc -O2 -g -D_FORTIFY_SOURCE=2 -fPIE -fstack-protector-strong --param=ssp-buffer-size=4 -Wmissing-prototypes -Wall -o docheck docheck.c -pie -Wl,-z,relro,-z,now
-/tmp/ccq2MpCO.o: En la función `main':
+/tmp/cc4I0UUV.o: En la función `main':
 /home/marcos/Escritorio/Chrony3.3-Custom/docheck.c:4: referencia a `log' sin definir
 /home/marcos/Escritorio/Chrony3.3-Custom/docheck.c:4: referencia a `pow' sin definir
 /home/marcos/Escritorio/Chrony3.3-Custom/docheck.c:4: referencia a `sqrt' sin definir
@@ -155,7 +155,7 @@ docheck.c: In function ‘main’:
 docheck.c:4:1: warning: implicit declaration of function ‘arc4random_buf’ [-Wimplicit-function-declaration]
  arc4random_buf(NULL, 0);
  ^
-/tmp/cczC46st.o: En la función `main':
+/tmp/ccTX1Agu.o: En la función `main':
 /home/marcos/Escritorio/Chrony3.3-Custom/docheck.c:4: referencia a `arc4random_buf' sin definir
 collect2: error: ld returned 1 exit status
 

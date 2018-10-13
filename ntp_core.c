@@ -392,7 +392,7 @@ NCR_Initialise(void)
   do_time_checks();
 
   logfileid = CNF_GetLogMeasurements(&log_raw_measurements) ? LOG_FileOpen("measurements",
-      "t1[s] 		     t2[s] 		  t3[s] 	       t4[s]		    offset[s]	  desvioActual[s]")
+      "t1[s]                t2[s]                t3[s]                t4[s]                offset[s]     desvioActual[s]")
     : -1;
 
   access_auth_table = ADF_CreateTable();
