@@ -43,7 +43,7 @@ extern void LCL_ReadRawTime(struct timespec *ts);
    adjtime()-like interface to correct offsets, and to adjust the
    frequency), we must correct the raw time to get this value */
 
-extern void LCL_ReadCookedTime(struct timespec *ts, double *err);
+extern void LCL_ReadCookedTime(struct timespec *ts, double *err, struct timespec *ts_raw);
 
 /* Convert raw time to cooked. */
 extern void LCL_CookTime(struct timespec *raw, struct timespec *cooked, double *err);

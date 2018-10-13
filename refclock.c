@@ -587,7 +587,7 @@ valid_sample_time(RCL_Instance instance, struct timespec *sample_time)
   struct timespec now, last_sample_time;
   double diff, last_offset, last_dispersion;
 
-  LCL_ReadCookedTime(&now, NULL);
+  LCL_ReadCookedTime(&now, NULL, NULL);
   diff = UTI_DiffTimespecsToDouble(&now, sample_time);
 
   if (diff < 0.0 || diff > UTI_Log2ToDouble(instance->poll + 1) ||

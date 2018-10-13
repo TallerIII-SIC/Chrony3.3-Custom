@@ -1,3 +1,7 @@
+sudo rm *.o
+sudo rm chronyc
+sudo rm chronyd
+sudo rm INSTALL
 sudo chmod +x ./configure
 ./configure
 make

@@ -626,7 +626,7 @@ SRC_SelectSource(SRC_Instance updated_inst)
   }
 
   /* This is accurate enough and cheaper than calling LCL_ReadCookedTime */
-  SCH_GetLastEventTime(&now, NULL, NULL);
+  SCH_GetLastEventTime(&now, NULL, NULL, NULL);
 
   /* Step 1 - build intervals about each source */
 

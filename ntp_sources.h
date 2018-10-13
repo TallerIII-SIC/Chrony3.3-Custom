@@ -88,7 +88,8 @@ extern uint32_t NSR_GetLocalRefid(IPAddr *address);
 
 /* This routine is called by ntp_io when a new packet arrives off the network */
 extern void NSR_ProcessRx(NTP_Remote_Address *remote_addr, NTP_Local_Address *local_addr,
-                          NTP_Local_Timestamp *rx_ts, NTP_Packet *message, int length);
+                          NTP_Local_Timestamp *rx_ts, struct timespec *rx_ts_raw, 
+			  NTP_Packet *message, int length);
 
 /* This routine is called by ntp_io when a packet was sent to the network and
    an accurate transmit timestamp was captured */

@@ -641,7 +641,7 @@ handle_source_data(CMD_Request *rx_message, CMD_Reply *tx_message)
   struct timespec now_corr;
 
   /* Get data */
-  SCH_GetLastEventTime(&now_corr, NULL, NULL);
+  SCH_GetLastEventTime(&now_corr, NULL, NULL, NULL);
   if (SRC_ReportSource(ntohl(rx_message->data.source_data.index), &report, &now_corr)) {
     switch (SRC_GetType(ntohl(rx_message->data.source_data.index))) {
       case SRC_NTP:
@@ -928,7 +928,7 @@ handle_smoothing(CMD_Request *rx_message, CMD_Reply *tx_message)
   RPT_SmoothingReport report;
   struct timespec now;
 
-  SCH_GetLastEventTime(&now, NULL, NULL);
+  SCH_GetLastEventTime(&now, NULL, NULL, NULL);
 
   if (!SMT_GetSmoothingReport(&report, &now)) {
     tx_message->status = htons(STT_NOTENABLED);
@@ -959,7 +959,7 @@ handle_smoothtime(CMD_Request *rx_message, CMD_Reply *tx_message)
   }
 
   option = ntohl(rx_message->data.smoothtime.option);
-  SCH_GetLastEventTime(&now, NULL, NULL);
+  SCH_GetLastEventTime(&now, NULL, NULL, NULL);
 
   switch (option) {
     case REQ_SMOOTHTIME_RESET:
@@ -983,7 +983,7 @@ handle_sourcestats(CMD_Request *rx_message, CMD_Reply *tx_message)
   RPT_SourcestatsReport report;
   struct timespec now_corr;
 
-  SCH_GetLastEventTime(&now_corr, NULL, NULL);
+  SCH_GetLastEventTime(&now_corr, NULL, NULL, NULL);
   status = SRC_ReportSourcestats(ntohl(rx_message->data.sourcestats.index),
                                  &report, &now_corr);
 
@@ -1053,7 +1053,7 @@ handle_client_accesses_by_index(CMD_Request *rx_message, CMD_Reply *tx_message)
   uint32_t i, j, req_first_index, req_n_clients;
   struct timespec now;
 
-  SCH_GetLastEventTime(&now, NULL, NULL);
+  SCH_GetLastEventTime(&now, NULL, NULL, NULL);
 
   req_first_index = ntohl(rx_message->data.client_accesses_by_index.first_index);
   req_n_clients = ntohl(rx_message->data.client_accesses_by_index.n_clients);
@@ -1283,7 +1283,7 @@ read_from_cmd_socket(int sock_fd, int event, void *anything)
   read_length = status;
 
   /* Get current time cheaply */
-  SCH_GetLastEventTime(&cooked_now, NULL, &now);
+  SCH_GetLastEventTime(&cooked_now, NULL, &now, NULL);
 
   UTI_SockaddrToIPAndPort(&where_from.sa, &remote_ip, &remote_port);
 

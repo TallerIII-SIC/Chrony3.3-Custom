@@ -62,7 +62,7 @@ typedef struct {
 static ARR_Instance file_handlers;
 
 /* Timestamp when last select() returned */
-static struct timespec last_select_ts, last_select_ts_raw;
+static struct timespec last_select_ts, last_select_ts_raw, last_select_ts_raw_raw;
 static double last_select_ts_err;
 
 /* ================================================== */
@@ -136,6 +136,7 @@ SCH_Initialise(void)
 
   LCL_ReadRawTime(&last_select_ts_raw);
   last_select_ts = last_select_ts_raw;
+  last_select_ts_raw_raw = last_select_ts_raw;
 
   initialised = 1;
 }
@@ -234,7 +235,7 @@ SCH_SetFileHandlerEvent(int fd, int event, int enable)
 /* ================================================== */
 
 void
-SCH_GetLastEventTime(struct timespec *cooked, double *err, struct timespec *raw)
+SCH_GetLastEventTime(struct timespec *cooked, double *err, struct timespec *raw, struct timespec *raw_raw)
 {
   if (cooked) {
     *cooked = last_select_ts;
@@ -243,6 +244,9 @@ SCH_GetLastEventTime(struct timespec *cooked, double *err, struct timespec *raw)
   }
   if (raw)
     *raw = last_select_ts_raw;
+
+  if(raw_raw)
+    *raw_raw = last_select_ts_raw_raw;
 }
 
 /* ================================================== */
@@ -760,6 +764,7 @@ SCH_MainLoop(void)
     }
 
     last_select_ts_raw = now;
+    last_select_ts_raw_raw = now;
     last_select_ts = cooked;
     last_select_ts_err = err;
 

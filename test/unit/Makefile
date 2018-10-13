@@ -2,7 +2,7 @@ TEST_WRAPPER =
 CHRONY_SRCDIR = ../..
 
 CC = gcc
-CFLAGS = -O2 -g -D_FORTIFY_SOURCE=2 -fPIE -fstack-protector --param=ssp-buffer-size=4 -Wmissing-prototypes -Wall -pthread
+CFLAGS = -O2 -g -D_FORTIFY_SOURCE=2 -fPIE -fstack-protector-strong --param=ssp-buffer-size=4 -Wmissing-prototypes -Wall -pthread
 CPPFLAGS = -I$(CHRONY_SRCDIR) 
 LDFLAGS =  -pie -Wl,-z,relro,-z,now -lm 
 

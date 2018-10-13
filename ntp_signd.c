@@ -185,7 +185,7 @@ process_response(SignInstance *inst)
     return;
   }
 
-  SCH_GetLastEventTime(NULL, NULL, &ts);
+  SCH_GetLastEventTime(NULL, NULL, &ts, NULL);
   delay = UTI_DiffTimespecsToDouble(&ts, &inst->request_ts);
 
   DEBUG_LOG("Signing succeeded (delay %f)", delay);
@@ -216,7 +216,7 @@ read_write_socket(int sock_fd, int event, void *anything)
     assert(inst->sent < inst->request_length);
 
     if (!inst->sent)
-      SCH_GetLastEventTime(NULL, NULL, &inst->request_ts);
+      SCH_GetLastEventTime(NULL, NULL, &inst->request_ts, NULL);
 
     s = send(sock_fd, (char *)&inst->request + inst->sent,
              inst->request_length - inst->sent, 0);

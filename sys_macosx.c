@@ -340,7 +340,7 @@ set_sync_status(int synchronised, double est_error, double max_error)
       struct timespec now;
       double rtc_sync_elapsed;
 
-      SCH_GetLastEventTime(NULL, NULL, &now);
+      SCH_GetLastEventTime(NULL, NULL, &now, NULL);
       rtc_sync_elapsed = UTI_DiffTimespecsToDouble(&now, &last_rtc_sync);
       if (fabs(rtc_sync_elapsed) >= RTC_SYNC_INTERVAL) {
         /* update the RTC by applying a step of 0.0 secs */

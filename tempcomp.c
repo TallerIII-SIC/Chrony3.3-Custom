@@ -97,7 +97,7 @@ read_timeout(void *arg)
       if (logfileid != -1) {
         struct timespec now;
 
-        LCL_ReadCookedTime(&now, NULL);
+        LCL_ReadCookedTime(&now, NULL, NULL);
         LOG_FileWrite(logfileid, "%s %11.4e %11.4e",
             UTI_TimeToLogForm(now.tv_sec), temp, comp);
       }

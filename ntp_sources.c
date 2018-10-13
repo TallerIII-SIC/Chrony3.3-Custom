@@ -700,7 +700,7 @@ NSR_HandleBadSource(IPAddr *address)
     return;
 
   /* Don't resolve names too frequently */
-  SCH_GetLastEventTime(NULL, NULL, &now);
+  SCH_GetLastEventTime(NULL, NULL, &now, NULL);
   diff = UTI_DiffTimespecsToDouble(&now, &last_replacement);
   if (fabs(diff) < RESOLVE_INTERVAL_UNIT * (1 << MIN_REPLACEMENT_INTERVAL)) {
     DEBUG_LOG("replacement postponed");
@@ -776,7 +776,8 @@ NSR_GetLocalRefid(IPAddr *address)
    possibly with an authentication tail */
 void
 NSR_ProcessRx(NTP_Remote_Address *remote_addr, NTP_Local_Address *local_addr,
-              NTP_Local_Timestamp *rx_ts, NTP_Packet *message, int length)
+              NTP_Local_Timestamp *rx_ts, struct timespec *rx_ts_raw,
+	      NTP_Packet *message, int length)
 {
   SourceRecord *record;
   struct SourcePool *pool;
@@ -788,7 +789,7 @@ NSR_ProcessRx(NTP_Remote_Address *remote_addr, NTP_Local_Address *local_addr,
   if (found == 2) { /* Must match IP address AND port number */
     record = get_record(slot);
 
-    if (!NCR_ProcessRxKnown(record->data, local_addr, rx_ts, message, length))
+    if (!NCR_ProcessRxKnown(record->data, local_addr, rx_ts, rx_ts_raw, message, length))
       return;
 
     if (record->tentative) {

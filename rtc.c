@@ -100,7 +100,7 @@ apply_driftfile_time(time_t t)
 {
   struct timespec now;
 
-  LCL_ReadCookedTime(&now, NULL);
+  LCL_ReadCookedTime(&now, NULL, NULL);
 
   if (now.tv_sec < t) {
     if (LCL_ApplyStepOffset(now.tv_sec - t))

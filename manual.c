@@ -174,7 +174,7 @@ MNL_AcceptTimestamp(struct timespec *ts, double *reg_offset, double *dfreq_ppm, 
   int i;
 
   if (enabled) {
-    LCL_ReadCookedTime(&now, NULL);
+    LCL_ReadCookedTime(&now, NULL, NULL);
 
     /* Make sure the provided timestamp is sane and the sample
        is not too close to the last one */
@@ -319,7 +319,7 @@ MNL_DeleteSample(int index)
 
   /* Now re-estimate.  NULLs because we don't want the parameters back
      in this case. */
-  LCL_ReadCookedTime(&now, NULL);
+  LCL_ReadCookedTime(&now, NULL, NULL);
   estimate_and_set_system(&now, 0, 0.0, NULL, NULL, NULL);
 
   return 1;

@@ -1268,7 +1268,7 @@ REF_GetOurStratum(void)
   uint32_t ref_id;
   double root_delay, root_dispersion;
 
-  SCH_GetLastEventTime(&now_cooked, NULL, NULL);
+  SCH_GetLastEventTime(&now_cooked, NULL, NULL, NULL);
   REF_GetReferenceParams(&now_cooked, &synchronised, &leap_status, &stratum,
                          &ref_id, &ref_time, &root_delay, &root_dispersion);
 
@@ -1341,7 +1341,7 @@ int REF_IsLeapSecondClose(void)
   if (!our_leap_sec)
     return 0;
 
-  SCH_GetLastEventTime(&now, NULL, &now_raw);
+  SCH_GetLastEventTime(&now, NULL, &now_raw, NULL);
 
   t = now.tv_sec > 0 ? now.tv_sec : -now.tv_sec;
   if ((t + LEAP_SECOND_CLOSE) % (24 * 3600) < 2 * LEAP_SECOND_CLOSE)

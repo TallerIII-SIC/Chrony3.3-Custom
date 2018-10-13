@@ -576,10 +576,12 @@ process_message(struct msghdr *hdr, int length, int sock_fd)
   NTP_Remote_Address remote_addr;
   NTP_Local_Address local_addr;
   NTP_Local_Timestamp local_ts;
+  struct timespec local_ts_raw;
   struct timespec sched_ts;
   struct cmsghdr *cmsg;
 
-  SCH_GetLastEventTime(&local_ts.ts, &local_ts.err, NULL);
+  SCH_GetLastEventTime(&local_ts.ts, &local_ts.err, NULL, &local_ts_raw);
+
   local_ts.source = NTP_TS_DAEMON;
   sched_ts = local_ts.ts;
 
@@ -672,7 +674,7 @@ process_message(struct msghdr *hdr, int length, int sock_fd)
   if (length < NTP_NORMAL_PACKET_LENGTH || length > sizeof (NTP_Receive_Buffer))
     return;
 
-  NSR_ProcessRx(&remote_addr, &local_addr, &local_ts,
+  NSR_ProcessRx(&remote_addr, &local_addr, &local_ts, &local_ts_raw,
                 (NTP_Packet *)hdr->msg_iov[0].iov_base, length);
 }
 

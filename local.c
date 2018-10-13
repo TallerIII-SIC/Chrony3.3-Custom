@@ -372,12 +372,15 @@ LCL_ReadRawTime(struct timespec *ts)
 /* ================================================== */
 
 void
-LCL_ReadCookedTime(struct timespec *result, double *err)
+LCL_ReadCookedTime(struct timespec *result, double *err, struct timespec *ts_raw)
 {
   struct timespec raw;
 
   LCL_ReadRawTime(&raw);
   LCL_CookTime(&raw, result, err);
+
+  if(ts_raw)
+    *ts_raw = raw;
 }
 
 /* ================================================== */

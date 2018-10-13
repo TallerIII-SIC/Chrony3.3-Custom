@@ -840,7 +840,7 @@ read_from_device(int fd_, int event, void *any)
     /* Read RTC time, sandwiched between two polls of the system clock
        so we can bound any error. */
 
-    SCH_GetLastEventTime(&sys_time, NULL, NULL);
+    SCH_GetLastEventTime(&sys_time, NULL, NULL, NULL);
 
     status = ioctl(fd, RTC_RD_TIME, &rtc_raw);
     if (status < 0) {
@@ -1002,7 +1002,7 @@ RTC_Linux_TimePreInit(time_t driftfile_time)
   } while (status >= 0 && rtc_raw.tm_sec != rtc_raw_retry.tm_sec);
 
   /* Read system clock */
-  LCL_ReadCookedTime(&old_sys_time, NULL);
+  LCL_ReadCookedTime(&old_sys_time, NULL, NULL);
 
   close(fd);
 
@@ -1102,7 +1102,7 @@ RTC_Linux_Trim(void)
        want |E| <= 0.5, which implies R <= S <= R+1, i.e. R is just
        the rounded down part of S, i.e. the seconds part. */
 
-    LCL_ReadCookedTime(&now, NULL);
+    LCL_ReadCookedTime(&now, NULL, NULL);
     
     set_rtc(now.tv_sec);
 
