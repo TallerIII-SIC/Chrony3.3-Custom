@@ -1,3 +1,12 @@
+/*Esta es una modificación del archivo 'sys_linux.c' original presente en Chrony 3.3 
+realizada con fines de investigacion por:
+
+- Christian Pedersen.
+- Ezequiel Werner.
+- Marcos Pernica
+
+Con fecha del 4 de Diciembre del año 2018.*/
+
 /*
   chronyd/chronyc - Programs for keeping computer clocks accurate.
 
