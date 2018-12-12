@@ -5,7 +5,7 @@ realizada con fines de investigacion por:
 - Ezequiel Werner.
 - Marcos Pernica
 
-Con fecha del 4 de Diciembre del año 2018.*/
+Con fecha del 12 de Diciembre del año 2018.*/
 
 /*
   chronyd/chronyc - Programs for keeping computer clocks accurate.
@@ -401,7 +401,7 @@ NCR_Initialise(void)
   do_time_checks();
 
   logfileid = CNF_GetLogMeasurements(&log_raw_measurements) ? LOG_FileOpen("measurements",
-      "t1[s]                t2[s]                t3[s]                t4[s]                offset[s]     desvioActual[s]")
+      "t1[s]                t2[s]                t3[s]                t4[s]                phi[s]     phiAjustado[s]")
     : -1;
 
   access_auth_table = ADF_CreateTable();
@@ -1469,6 +1469,8 @@ receive_packet(NCR_Instance inst, NTP_Local_Address *local_addr,
   char *t1 = "\0", *t2 = "\0", *t3 = "\0", *t4 = "\0";
   struct timespec now_raw;
   double correction;
+  double offsetBase;
+	
 
   int pkt_leap, pkt_version;
   uint32_t pkt_refid, pkt_key_id;
@@ -1654,7 +1656,7 @@ receive_packet(NCR_Instance inst, NTP_Local_Address *local_addr,
     /* Calculate offset.  Following the NTP definition, this is negative
        if we are fast of the remote source. */
     offset = UTI_DiffTimespecsToDouble(&remote_average, &local_average);
-
+    offsetBase = offset
     /* Apply configured correction */
     offset += inst->offset_correction;
 
@@ -1935,7 +1937,7 @@ receive_packet(NCR_Instance inst, NTP_Local_Address *local_addr,
 		t2,
 		t3,
 		t4,
-		offset,
+		offsetBase,
 		correction);
   }            
   return good_packet;
