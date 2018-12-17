@@ -40,10 +40,10 @@ int main(int argc, char **argv) {
 return (int) pow(2.0, log(sqrt((double)argc)));
 return 0; }
 gcc -O2 -g -D_FORTIFY_SOURCE=2 -fPIE -fstack-protector-strong --param=ssp-buffer-size=4 -Wmissing-prototypes -Wall -o docheck docheck.c -pie -Wl,-z,relro,-z,now
-/tmp/ccYuVAN4.o: En la función `main':
-/home/david/Escritorio/Chrony3.3-Custom/docheck.c:4: referencia a `log' sin definir
-/home/david/Escritorio/Chrony3.3-Custom/docheck.c:4: referencia a `pow' sin definir
-/home/david/Escritorio/Chrony3.3-Custom/docheck.c:4: referencia a `sqrt' sin definir
+/tmp/ccJWraGl.o: En la función `main':
+/home/marcos/Escritorio/Chrony3.3-Custom/docheck.c:4: referencia a `log' sin definir
+/home/marcos/Escritorio/Chrony3.3-Custom/docheck.c:4: referencia a `pow' sin definir
+/home/marcos/Escritorio/Chrony3.3-Custom/docheck.c:4: referencia a `sqrt' sin definir
 collect2: error: ld returned 1 exit status
 
 docheck.c:
@@ -155,8 +155,8 @@ docheck.c: In function ‘main’:
 docheck.c:4:1: warning: implicit declaration of function ‘arc4random_buf’ [-Wimplicit-function-declaration]
  arc4random_buf(NULL, 0);
  ^
-/tmp/ccrH2okc.o: En la función `main':
-/home/david/Escritorio/Chrony3.3-Custom/docheck.c:4: referencia a `arc4random_buf' sin definir
+/tmp/cccAkSca.o: En la función `main':
+/home/marcos/Escritorio/Chrony3.3-Custom/docheck.c:4: referencia a `arc4random_buf' sin definir
 collect2: error: ld returned 1 exit status
 
 docheck.c:
@@ -167,9 +167,7 @@ int main(int argc, char **argv) {
 return getrandom(NULL, 256, 0);
 return 0; }
 gcc -O2 -g -D_FORTIFY_SOURCE=2 -fPIE -fstack-protector-strong --param=ssp-buffer-size=4 -Wmissing-prototypes -Wall -pthread -o docheck docheck.c -pie -Wl,-z,relro,-z,now
-docheck.c:3:24: fatal error: sys/random.h: No existe el fichero o el directorio
- #include <sys/random.h>
-                        ^
+docheck.c:3:24: fatal error: sys/random.h: No existe el archivo o el directorio
 compilation terminated.
 
 docheck.c:
@@ -198,17 +196,41 @@ int main(int argc, char **argv) {
                       &val, sizeof (val));
 return 0; }
 gcc -O2 -g -D_FORTIFY_SOURCE=2 -fPIE -fstack-protector-strong --param=ssp-buffer-size=4 -Wmissing-prototypes -Wall -pthread -o docheck docheck.c -pie -Wl,-z,relro,-z,now
+
+docheck.c:
+#include "config.h"
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <linux/net_tstamp.h>
+int main(int argc, char **argv) {
+
+    struct scm_ts_pktinfo pktinfo;
+    pktinfo.if_index = pktinfo.pkt_length = 0;
+    return pktinfo.if_index + pktinfo.pkt_length + HWTSTAMP_FILTER_NTP_ALL +
+           SCM_TIMESTAMPING_PKTINFO +
+           SOF_TIMESTAMPING_OPT_PKTINFO + SOF_TIMESTAMPING_OPT_TX_SWHW;
+return 0; }
+gcc -O2 -g -D_FORTIFY_SOURCE=2 -fPIE -fstack-protector-strong --param=ssp-buffer-size=4 -Wmissing-prototypes -Wall -pthread -o docheck docheck.c -pie -Wl,-z,relro,-z,now
 docheck.c: In function ‘main’:
-docheck.c:10:47: error: ‘SOF_TIMESTAMPING_OPT_CMSG’ undeclared (first use in this function)
-               SOF_TIMESTAMPING_RAW_HARDWARE | SOF_TIMESTAMPING_OPT_CMSG;
-                                               ^
-docheck.c:10:47: note: each undeclared identifier is reported only once for each function it appears in
-docheck.c:11:20: error: invalid application of ‘sizeof’ to incomplete type ‘struct scm_timestamping’
-     return sizeof (struct scm_timestamping) + SCM_TSTAMP_SND + PTP_SYS_OFFSET +
-                    ^
-docheck.c:11:47: error: ‘SCM_TSTAMP_SND’ undeclared (first use in this function)
-     return sizeof (struct scm_timestamping) + SCM_TSTAMP_SND + PTP_SYS_OFFSET +
-                                               ^
+docheck.c:7:27: error: storage size of ‘pktinfo’ isn’t known
+     struct scm_ts_pktinfo pktinfo;
+                           ^
+docheck.c:9:52: error: ‘HWTSTAMP_FILTER_NTP_ALL’ undeclared (first use in this function)
+     return pktinfo.if_index + pktinfo.pkt_length + HWTSTAMP_FILTER_NTP_ALL +
+                                                    ^
+docheck.c:9:52: note: each undeclared identifier is reported only once for each function it appears in
+docheck.c:10:12: error: ‘SCM_TIMESTAMPING_PKTINFO’ undeclared (first use in this function)
+            SCM_TIMESTAMPING_PKTINFO +
+            ^
+docheck.c:11:12: error: ‘SOF_TIMESTAMPING_OPT_PKTINFO’ undeclared (first use in this function)
+            SOF_TIMESTAMPING_OPT_PKTINFO + SOF_TIMESTAMPING_OPT_TX_SWHW;
+            ^
+docheck.c:11:43: error: ‘SOF_TIMESTAMPING_OPT_TX_SWHW’ undeclared (first use in this function)
+            SOF_TIMESTAMPING_OPT_PKTINFO + SOF_TIMESTAMPING_OPT_TX_SWHW;
+                                           ^
+docheck.c:7:27: warning: unused variable ‘pktinfo’ [-Wunused-variable]
+     struct scm_ts_pktinfo pktinfo;
+                           ^
 
 docheck.c:
 #include "config.h"
@@ -217,19 +239,18 @@ int main(int argc, char **argv) {
 
 return 0; }
 gcc -O2 -g -D_FORTIFY_SOURCE=2 -fPIE -fstack-protector-strong --param=ssp-buffer-size=4 -Wmissing-prototypes -Wall -pthread -o docheck docheck.c -pie -Wl,-z,relro,-z,now
+docheck.c:2:25: fatal error: sys/timepps.h: No existe el archivo o el directorio
+compilation terminated.
 
 docheck.c:
 #include "config.h"
-#include <string.h>
-#include <sys/timepps.h>
+#include <timepps.h>
 int main(int argc, char **argv) {
 
-    pps_handle_t h = 0;
-    pps_info_t i;
-    struct timespec ts;
-    return time_pps_fetch(h, PPS_TSFMT_TSPEC, &i, &ts);
 return 0; }
 gcc -O2 -g -D_FORTIFY_SOURCE=2 -fPIE -fstack-protector-strong --param=ssp-buffer-size=4 -Wmissing-prototypes -Wall -pthread -o docheck docheck.c -pie -Wl,-z,relro,-z,now
+docheck.c:2:21: fatal error: timepps.h: No existe el archivo o el directorio
+compilation terminated.
 
 docheck.c:
 #include "config.h"
@@ -242,6 +263,8 @@ int main(int argc, char **argv) {
 prctl(PR_SET_KEEPCAPS, 1);cap_set_proc(cap_from_text("cap_sys_time=ep"));
 return 0; }
 gcc -O2 -g -D_FORTIFY_SOURCE=2 -fPIE -fstack-protector-strong --param=ssp-buffer-size=4 -Wmissing-prototypes -Wall -pthread -o docheck docheck.c -lcap -pie -Wl,-z,relro,-z,now
+docheck.c:5:28: fatal error: sys/capability.h: No existe el archivo o el directorio
+compilation terminated.
 
 docheck.c:
 #include "config.h"
@@ -292,9 +315,7 @@ int main(int argc, char **argv) {
 add_history(readline("prompt"));
 return 0; }
 gcc -O2 -g -D_FORTIFY_SOURCE=2 -fPIE -fstack-protector-strong --param=ssp-buffer-size=4 -Wmissing-prototypes -Wall -pthread -o docheck docheck.c -ledit -pie -Wl,-z,relro,-z,now
-docheck.c:3:31: fatal error: editline/readline.h: No existe el fichero o el directorio
- #include <editline/readline.h>
-                               ^
+docheck.c:3:31: fatal error: editline/readline.h: No existe el archivo o el directorio
 compilation terminated.
 
 docheck.c:
@@ -306,9 +327,7 @@ int main(int argc, char **argv) {
 add_history(readline("prompt"));
 return 0; }
 gcc -O2 -g -D_FORTIFY_SOURCE=2 -fPIE -fstack-protector-strong --param=ssp-buffer-size=4 -Wmissing-prototypes -Wall -pthread -o docheck docheck.c -lreadline -pie -Wl,-z,relro,-z,now
-docheck.c:3:31: fatal error: readline/readline.h: No existe el fichero o el directorio
- #include <readline/readline.h>
-                               ^
+docheck.c:3:31: fatal error: readline/readline.h: No existe el archivo o el directorio
 compilation terminated.
 
 docheck.c:
@@ -320,9 +339,7 @@ int main(int argc, char **argv) {
 add_history(readline("prompt"));
 return 0; }
 gcc -O2 -g -D_FORTIFY_SOURCE=2 -fPIE -fstack-protector-strong --param=ssp-buffer-size=4 -Wmissing-prototypes -Wall -pthread -o docheck docheck.c -lreadline -lncurses -pie -Wl,-z,relro,-z,now
-docheck.c:3:31: fatal error: readline/readline.h: No existe el fichero o el directorio
- #include <readline/readline.h>
-                               ^
+docheck.c:3:31: fatal error: readline/readline.h: No existe el archivo o el directorio
 compilation terminated.
 
 docheck.c:
@@ -333,9 +350,7 @@ int main(int argc, char **argv) {
 return nettle_hashes[0]->context_size;
 return 0; }
 gcc -O2 -g -D_FORTIFY_SOURCE=2 -fPIE -fstack-protector-strong --param=ssp-buffer-size=4 -Wmissing-prototypes -Wall -pthread -o docheck docheck.c -pie -Wl,-z,relro,-z,now
-docheck.c:2:32: fatal error: nettle/nettle-meta.h: No existe el fichero o el directorio
- #include <nettle/nettle-meta.h>
-                                ^
+docheck.c:2:32: fatal error: nettle/nettle-meta.h: No existe el archivo o el directorio
 compilation terminated.
 
 docheck.c:
@@ -347,9 +362,7 @@ int main(int argc, char **argv) {
 NSSLOWHASH_Begin(NSSLOWHASH_NewContext(NSSLOW_Init(), HASH_AlgSHA512));
 return 0; }
 gcc -O2 -g -D_FORTIFY_SOURCE=2 -fPIE -fstack-protector-strong --param=ssp-buffer-size=4 -Wmissing-prototypes -Wall -pthread -o docheck docheck.c -lfreebl3 -pie -Wl,-z,relro,-z,now
-docheck.c:3:19: fatal error: hasht.h: No existe el fichero o el directorio
- #include <hasht.h>
-                   ^
+docheck.c:3:19: fatal error: hasht.h: No existe el archivo o el directorio
 compilation terminated.
 
 docheck.c:
@@ -359,8 +372,6 @@ int main(int argc, char **argv) {
 hash_memory_multi(find_hash("md5"), NULL, NULL, NULL, 0, NULL, 0);
 return 0; }
 gcc -O2 -g -D_FORTIFY_SOURCE=2 -fPIE -fstack-protector-strong --param=ssp-buffer-size=4 -Wmissing-prototypes -Wall -pthread -I/usr/include/tomcrypt -o docheck docheck.c -ltomcrypt -pie -Wl,-z,relro,-z,now
-docheck.c:2:22: fatal error: tomcrypt.h: No existe el fichero o el directorio
- #include <tomcrypt.h>
-                      ^
+docheck.c:2:22: fatal error: tomcrypt.h: No existe el archivo o el directorio
 compilation terminated.
 

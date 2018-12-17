@@ -39,7 +39,7 @@ OBJS = array.o cmdparse.o conf.o local.o logging.o main.o memory.o \
        reference.o regress.o rtc.o sched.o sources.o sourcestats.o stubs.o \
        smooth.o sys.o sys_null.o tempcomp.o util.o $(HASH_OBJ)
 
-EXTRA_OBJS=sys_generic.o sys_linux.o sys_timex.o cmdmon.o manual.o pktlength.o ntp_core.o ntp_io.o ntp_sources.o addrfilt.o clientlog.o keys.o nameserv.o refclock.o refclock_phc.o refclock_pps.o refclock_shm.o refclock_sock.o nameserv_async.o rtc_linux.o hwclock.o
+EXTRA_OBJS=sys_generic.o sys_linux.o sys_timex.o cmdmon.o manual.o pktlength.o ntp_core.o ntp_io.o ntp_sources.o addrfilt.o clientlog.o keys.o nameserv.o refclock.o refclock_phc.o refclock_pps.o refclock_shm.o refclock_sock.o nameserv_async.o hwclock.o ntp_io_linux.o rtc_linux.o
 
 CLI_OBJS = array.o client.o cmdparse.o getdate.o memory.o nameserv.o \
            pktlength.o util.o $(HASH_OBJ)
@@ -49,7 +49,7 @@ ALL_OBJS = $(OBJS) $(EXTRA_OBJS) $(CLI_OBJS)
 LDFLAGS =  -pie -Wl,-z,relro,-z,now
 LIBS = -lm
 
-EXTRA_LIBS= -lcap
+EXTRA_LIBS=
 EXTRA_CLI_LIBS= 
 
 # Until we have a main procedure we can link, just build object files

@@ -401,7 +401,7 @@ NCR_Initialise(void)
   do_time_checks();
 
   logfileid = CNF_GetLogMeasurements(&log_raw_measurements) ? LOG_FileOpen("measurements",
-      "t1[s]                t2[s]                t3[s]                t4[s]                phi[s]     phiAjustado[s]")
+      "t1[s]                t2[s]                t3[s]                t4[s]                phi[s]")
     : -1;
 
   access_auth_table = ADF_CreateTable();
@@ -1467,9 +1467,8 @@ receive_packet(NCR_Instance inst, NTP_Local_Address *local_addr,
   SST_Stats stats;
 
   char *t1 = "\0", *t2 = "\0", *t3 = "\0", *t4 = "\0";
-  struct timespec now_raw;
-  double correction;
-  double offsetBase;
+  struct timespec T2T3, T1T4;
+  double phi = 0, dumb = 0;
 	
 
   int pkt_leap, pkt_version;
@@ -1647,6 +1646,13 @@ receive_packet(NCR_Instance inst, NTP_Local_Address *local_addr,
 	t2 = UTI_TimespecToString(&remote_receive);
 	t3 = UTI_TimespecToString(&remote_transmit);
 
+	/* Calcula los promedios para el phi */
+	UTI_AverageDiffTimespecs(&remote_receive, &remote_transmit,
+                             &T2T3, &dumb);
+    	UTI_AverageDiffTimespecs(&local_transmit_raw.ts, rx_ts_raw,
+                             &T1T4, &dumb);
+
+
 
     /* Calculate delay */
     delay = fabs(local_interval - remote_interval);
@@ -1656,7 +1662,8 @@ receive_packet(NCR_Instance inst, NTP_Local_Address *local_addr,
     /* Calculate offset.  Following the NTP definition, this is negative
        if we are fast of the remote source. */
     offset = UTI_DiffTimespecsToDouble(&remote_average, &local_average);
-    offsetBase = offset
+    /* Calcula el phi */
+    phi = UTI_DiffTimespecsToDouble(&T2T3, &T1T4);
     /* Apply configured correction */
     offset += inst->offset_correction;
 
@@ -1927,18 +1934,14 @@ receive_packet(NCR_Instance inst, NTP_Local_Address *local_addr,
     inst->report.total_valid_count++;
   }
 
-  LCL_ReadRawTime(&now_raw);
-  LCL_GetOffsetCorrection(&now_raw, &correction, NULL);
-
   /* Do measurement logging */
   if (logfileid != -1 && (log_raw_measurements || synced_packet)) {
-    LOG_FileWrite(logfileid, "%s,%s,%s,%s,%+.9f,%+.9f",
+    LOG_FileWrite(logfileid, "%s,%s,%s,%s,%+.9f",
 		t1,
 		t2,
 		t3,
 		t4,
-		offsetBase,
-		correction);
+		phi);
   }            
   return good_packet;
 }
