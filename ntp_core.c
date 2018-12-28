@@ -1,9 +1,9 @@
 /*Esta es una modificación del archivo 'ntp_core.c' original presente en Chrony 3.3 
 realizada con fines de investigacion por:
 
-- Christian Pedersen.
-- Ezequiel Werner.
-- Marcos Pernica
+- Christian Pedersen (CP).
+- Ezequiel Werner (EW).
+- Marcos Pernica (MP).
 
 Con fecha del 12 de Diciembre del año 2018.*/
 
@@ -400,9 +400,11 @@ NCR_Initialise(void)
   do_size_checks();
   do_time_checks();
 
+  /* Lines edited by CP, EW and MP to customize the log header */
   logfileid = CNF_GetLogMeasurements(&log_raw_measurements) ? LOG_FileOpen("measurements",
       "t1[s]                t2[s]                t3[s]                t4[s]                phi[s]")
     : -1;
+  /* End of the edited zone */
 
   access_auth_table = ADF_CreateTable();
   broadcasts = ARR_CreateInstance(sizeof (BroadcastDestination));
@@ -922,7 +924,7 @@ transmit_packet(NTP_Mode my_mode, /* The mode this machine wants to be */
                 NTP_Local_Timestamp *local_rx, /* The RX time of the received packet */
                 NTP_Local_Timestamp *local_tx, /* The TX time of the previous packet
                                                   RESULT : TX time of this packet */
-		NTP_Local_Timestamp *local_tx_raw,
+        NTP_Local_Timestamp *local_tx_raw,
                 NTP_int64 *local_ntp_rx, /* The receive timestamp from the previous packet
                                             RESULT : receive timestamp from this packet */
                 NTP_int64 *local_ntp_tx, /* The transmit timestamp from the previous packet
@@ -1462,14 +1464,17 @@ check_delay_dev_ratio(NCR_Instance inst, SST_Stats stats,
 static int
 receive_packet(NCR_Instance inst, NTP_Local_Address *local_addr,
                NTP_Local_Timestamp *rx_ts, struct timespec *rx_ts_raw,
-	       NTP_Packet *message, int length)
+           NTP_Packet *message, int length)
 {
   SST_Stats stats;
 
+  /* Variables added by CP, EW and MP */
   char *t1 = "\0", *t2 = "\0", *t3 = "\0", *t4 = "\0";
+  /* End of variables added by CP, EW and MP */
+
   struct timespec T2T3, T1T4;
   double phi = 0, dumb = 0;
-	
+    
 
   int pkt_leap, pkt_version;
   uint32_t pkt_refid, pkt_key_id;
@@ -1607,12 +1612,12 @@ receive_packet(NCR_Instance inst, NTP_Local_Address *local_addr,
           UTI_DiffTimespecsToDouble(&inst->local_rx.ts, &inst->prev_local_tx.ts)) {
         UTI_Ntp64ToTimespec(&inst->remote_ntp_rx, &remote_receive);
         remote_request_receive = remote_receive;
-	local_transmit_raw = inst->prev_local_tx_raw;
+    local_transmit_raw = inst->prev_local_tx_raw;
         local_transmit = inst->prev_local_tx;
       } else {
         UTI_Ntp64ToTimespec(&message->receive_ts, &remote_receive);
         UTI_Ntp64ToTimespec(&inst->remote_ntp_rx, &remote_request_receive);
-	local_transmit_raw = inst->local_tx_raw;
+    local_transmit_raw = inst->local_tx_raw;
         local_transmit = inst->local_tx;
       }
       UTI_Ntp64ToTimespec(&message->transmit_ts, &remote_transmit);
@@ -1638,21 +1643,22 @@ receive_packet(NCR_Instance inst, NTP_Local_Address *local_addr,
 
     precision = LCL_GetSysPrecisionAsQuantum() + UTI_Log2ToDouble(message->precision);
 
+    /* Lines added by CP, EW and MP in order to print the data to measure */
+  
+    /*Obtiene los T del paquete.*/
+    t1 = UTI_TimespecToString(&local_transmit_raw.ts);
+    t4 = UTI_TimespecToString(rx_ts_raw);
 
-	/*Obtiene los T del paquete.*/
-	t1 = UTI_TimespecToString(&local_transmit_raw.ts);
-	t4 = UTI_TimespecToString(rx_ts_raw);
+    t2 = UTI_TimespecToString(&remote_receive);
+    t3 = UTI_TimespecToString(&remote_transmit);
 
-	t2 = UTI_TimespecToString(&remote_receive);
-	t3 = UTI_TimespecToString(&remote_transmit);
-
-	/* Calcula los promedios para el phi */
-	UTI_AverageDiffTimespecs(&remote_receive, &remote_transmit,
+    /* Calcula los promedios para el phi */
+    UTI_AverageDiffTimespecs(&remote_receive, &remote_transmit,
                              &T2T3, &dumb);
-    	UTI_AverageDiffTimespecs(&local_transmit_raw.ts, rx_ts_raw,
+    UTI_AverageDiffTimespecs(&local_transmit_raw.ts, rx_ts_raw,
                              &T1T4, &dumb);
 
-
+    /* End of the added lines */
 
     /* Calculate delay */
     delay = fabs(local_interval - remote_interval);
@@ -1662,8 +1668,12 @@ receive_packet(NCR_Instance inst, NTP_Local_Address *local_addr,
     /* Calculate offset.  Following the NTP definition, this is negative
        if we are fast of the remote source. */
     offset = UTI_DiffTimespecsToDouble(&remote_average, &local_average);
+        
+    /* Line added by CP, EW and MP in order to print the data to measure */
     /* Calcula el phi */
     phi = UTI_DiffTimespecsToDouble(&T2T3, &T1T4);
+    /* End of the added section */
+    
     /* Apply configured correction */
     offset += inst->offset_correction;
 
@@ -1934,15 +1944,20 @@ receive_packet(NCR_Instance inst, NTP_Local_Address *local_addr,
     inst->report.total_valid_count++;
   }
 
+  /* The measurement logging format was modified by CP, EW and MP */
+
   /* Do measurement logging */
   if (logfileid != -1 && (log_raw_measurements || synced_packet)) {
     LOG_FileWrite(logfileid, "%s,%s,%s,%s,%+.9f",
-		t1,
-		t2,
-		t3,
-		t4,
-		phi);
+        t1,
+        t2,
+        t3,
+        t4,
+        phi);
   }            
+
+  /* End of the edited section */
+
   return good_packet;
 }
 
@@ -1978,7 +1993,7 @@ receive_packet(NCR_Instance inst, NTP_Local_Address *local_addr,
 int
 NCR_ProcessRxKnown(NCR_Instance inst, NTP_Local_Address *local_addr,
                    NTP_Local_Timestamp *rx_ts, struct timespec *rx_ts_raw,
-		   NTP_Packet *message, int length)
+                   NTP_Packet *message, int length)
 {
   int pkt_mode, proc_packet, proc_as_unknown;
 
